@@ -16,8 +16,7 @@ export class KubeConService extends core.Construct {
     super(scope, id);
 
     const table = new dynamodb.Table(this, 'KubeConEu2020Sessions', {
-      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-      sortKey: {name: 'views', type: dynamodb.AttributeType.NUMBER }
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
     });
 
     const historyTable = new dynamodb.Table(this, 'KubeConEu2020SessionsHistory', {
@@ -43,7 +42,7 @@ export class KubeConService extends core.Construct {
     const lambdaTarget = new eventstargets.LambdaFunction(consumeFunction);
 
     new events.Rule(this, 'ScheduleRule', {
-      schedule: events.Schedule.cron({ minute: '0', hour: '1' }),
+      schedule: events.Schedule.cron({ minute: '0' }),
       targets: [lambdaTarget],
     });
 
