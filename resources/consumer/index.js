@@ -3,6 +3,7 @@ var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 const request = require('request');
 
 const tableName = process.env.DYNAMODB_TABLE;
+const historyTableName = process.env.DYNAMODB_HISTORY_TABLE;
 const kubeconCookie = process.env.KUBECON_COOKIE;
 
 exports.handler = function(event, context) {
@@ -92,6 +93,17 @@ exports.handler = function(event, context) {
           if ( typeof session.ToTime !== 'undefined') {
             params.Item.endTime = {S: session.ToTime };
           }
+
+          dynamodb.putItem(params, function(err, data) {
+            if (err) console.log(err, err.stack); // an error occurred
+            else     console.log(data);           // successful response
+          });
+
+          // History table
+          params.TableName = historyTableName;
+
+          let timestamp = new Date();
+          params.Item.timestamp = {S: timestamp.toString() };
 
           dynamodb.putItem(params, function(err, data) {
             if (err) console.log(err, err.stack); // an error occurred

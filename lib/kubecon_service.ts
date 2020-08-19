@@ -20,6 +20,11 @@ export class KubeConService extends core.Construct {
       sortKey: {name: 'views', type: dynamodb.AttributeType.NUMBER }
     });
 
+    const historyTable = new dynamodb.Table(this, 'KubeConEu2020SessionsHistory', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+      sortKey: {name: 'timestamp', type: dynamodb.AttributeType.STRING }
+    });
+
     const kubeconCookie = this.node.tryGetContext('kubecon_cookie');
 
     const consumeFunction = new lambda.Function(this, 'KubeConConsume', {
@@ -30,6 +35,7 @@ export class KubeConService extends core.Construct {
       timeout: core.Duration.seconds(30),
       environment: {
         DYNAMODB_TABLE: table.tableName,
+        DYNAMODB_HISTORY_TABLE: historyTable.tableName,
         KUBECON_COOKIE: kubeconCookie
       },
     });
@@ -52,6 +58,7 @@ export class KubeConService extends core.Construct {
     });
 
     table.grantWriteData(consumeFunction);
+    historyTable.grantWriteData(consumeFunction);
     table.grantReadData(listFunction);
 
     const api = new apigateway.RestApi(this, "kubeconvides-api", {

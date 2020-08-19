@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import Sessions from './components/sessions';
 import ReactGA from 'react-ga';
 
+ReactGA.initialize("UA-60330160-3");
+
 class App extends Component {
   state = {
     sessions: []
   }
 
   componentDidMount() {
-    ReactGA.initialize("UA-60330160-3");
     fetch('https://api.kubeconvibes.com')
       .then(res => res.json())
       .then((data) => {
