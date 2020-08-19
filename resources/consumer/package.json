@@ -1,0 +1,10 @@
+{
+  "name": "kubecon-eu-popular-sessions-consumer",
+  "version": "0.1.0",
+  "dependencies": {
+    "@aws-cdk/aws-dynamodb": "^1.59.0",
+    "@aws-cdk/aws-lambda": "^1.59.0",
+    "@aws-cdk/core": "1.59.0",
+    "request": "^2.88.2"
+  }
+}
