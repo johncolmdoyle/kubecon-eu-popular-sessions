@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Sessions from './components/sessions';
+import ReactGA from 'react-ga';
 
 class App extends Component {
   state = {
@@ -7,6 +8,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    ReactGA.initialize("UA-60330160-3");
     fetch('https://api.kubeconvibes.com')
       .then(res => res.json())
       .then((data) => {
