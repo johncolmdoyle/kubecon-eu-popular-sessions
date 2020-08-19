@@ -6,6 +6,13 @@ const tableName = process.env.DYNAMODB_TABLE;
 const historyTableName = process.env.DYNAMODB_HISTORY_TABLE;
 const kubeconCookie = process.env.KUBECON_COOKIE;
 
+const formatedTimestamp = ()=> {
+  const d = new Date()
+  const date = d.toISOString().split('T')[0];
+  const time = d.toTimeString().split(' ')[0].replace(/:/g, '-');
+  return `${date} ${time}`
+}
+
 exports.handler = function(event, context) {
   let kubeConTracks = [
     {name: '101 Track', url: 'https://onlinexperiences.com/scripts/Server.nxp?LASCmd=AI:1;F:LBSEXPORT!JSON&SQLID=14523&EventPackageKey=55064&RandomValue=1597773745984'},
@@ -34,7 +41,7 @@ exports.handler = function(event, context) {
   let options = {
     json: true,
     headers: {
-      'Cookie': kubeconCookie;
+      'Cookie': kubeconCookie
     }
   };
 
@@ -94,23 +101,21 @@ exports.handler = function(event, context) {
             params.Item.endTime = {S: session.ToTime };
           }
 
-          dynamodb.putItem(params, function(err, data) {
-            if (err) console.log(err, err.stack); // an error occurred
-            else     console.log(data);           // successful response
-          });
-
-          // History table
-          params.TableName = historyTableName;
-
-          let timestamp = new Date();
-          params.Item.timestamp = {S: timestamp.toString() };
+          params.Item.timestamp = {S: formatedTimestamp() };
 
           dynamodb.putItem(params, function(err, data) {
             if (err) console.log(err, err.stack); // an error occurred
-            else     console.log(data);           // successful response
+            else {
+              params.TableName = historyTableName;
+
+              dynamodb.putItem(params, function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else     console.log(data);           // successful response
+              });
+            }
           });
         }
-      };
+      }
     });
   }
 }
